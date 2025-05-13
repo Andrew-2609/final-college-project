@@ -49,4 +49,13 @@ impl PatientRepository for Arc<PostgresPatientRepository> {
 
         Ok(inserted_patient_id)
     }
+
+    async fn find_by_cpf(&self, input_cpf: String) -> Result<Option<Patient>, RepositoryError> {
+        let patient = patients
+            .filter(cpf.eq(input_cpf))
+            .first::<Patient>(&mut self.pool.get().unwrap())
+            .optional()?;
+
+        Ok(patient)
+    }
 }
