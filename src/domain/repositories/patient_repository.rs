@@ -1,6 +1,8 @@
 use crate::domain::{entities::patient::Patient, errors::repository_error::RepositoryError};
 use async_trait::async_trait;
+use mockall::automock;
 
+#[automock]
 #[async_trait]
 pub trait PatientRepository {
     async fn exists_by_cpf(&self, cpf: &str) -> Result<bool, RepositoryError>;

@@ -4,7 +4,9 @@
     "dotenv",
     "dtos",
     "Insertable",
+    "mockall",
     "serde",
-    "SGHSS"
+    "SGHSS",
+    "withf"
   ]
 }
