@@ -1,10 +1,11 @@
 use actix_web::{
-    HttpResponse, ResponseError, get, post, put,
+    HttpResponse, ResponseError, delete, get, post, put,
     web::{self, Path},
 };
 
 use crate::{
     application::use_cases::{
+        delete_patient_by_cpf::DeletePatientByCpfUseCase,
         find_patient_by_cpf::FindPatientByCpfUseCase, register_patient::RegisterPatientUseCase,
         update_patient_by_cpf::UpdatePatientByCpfUseCase,
     },
@@ -67,6 +68,20 @@ pub async fn update_patient_by_cpf_handler(
             let loaded_patient: Option<LoadedPatientDTO> = patient.into();
             HttpResponse::Ok().json(loaded_patient)
         }
+        Err(err) => PatientHttpError::from(err).error_response(),
+    }
+}
+
+#[delete("/{cpf}")]
+pub async fn delete_patient_by_cpf_handler(
+    repo: web::Data<PostgresPatientRepository>,
+    path: Path<String>,
+) -> HttpResponse {
+    match DeletePatientByCpfUseCase::new(repo.into_inner())
+        .execute(path.into_inner())
+        .await
+    {
+        Ok(_) => HttpResponse::Ok().json(()),
         Err(err) => PatientHttpError::from(err).error_response(),
     }
 }

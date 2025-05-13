@@ -9,4 +9,5 @@ pub trait PatientRepository {
     async fn save(&self, patient: &Patient) -> Result<i32, RepositoryError>;
     async fn find_by_cpf(&self, cpf: String) -> Result<Option<Patient>, RepositoryError>;
     async fn update(&self, patient: &Patient) -> Result<Patient, RepositoryError>;
+    async fn delete_by_cpf(&self, cpf: String) -> Result<(), RepositoryError>;
 }

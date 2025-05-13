@@ -70,4 +70,11 @@ impl PatientRepository for Arc<PostgresPatientRepository> {
 
         Ok(patient.clone())
     }
+
+    async fn delete_by_cpf(&self, input_cpf: String) -> Result<(), RepositoryError> {
+        diesel::delete(patients.filter(cpf.eq(input_cpf)))
+            .execute(&mut self.pool.get().unwrap())?;
+
+        Ok(())
+    }
 }
