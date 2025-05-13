@@ -4,15 +4,18 @@ use crate::domain::errors::repository_error::RepositoryError;
 
 #[derive(Debug, PartialEq)]
 pub enum PatientApplicationError {
-    CPFAlreadyTaken(String),
+    Conflict(String),
     Unexpected(String),
 }
 
 impl fmt::Display for PatientApplicationError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            PatientApplicationError::CPFAlreadyTaken(cpf) => {
-                write!(f, "There's already a user registered with the CPF: {cpf}")
+            PatientApplicationError::Conflict(msg) => {
+                write!(
+                    f,
+                    "The following conflict occurred when writing a patient: {msg}"
+                )
             }
             PatientApplicationError::Unexpected(msg) => {
                 write!(f, "An unexpected error occurred: {msg}")
@@ -39,14 +42,14 @@ mod test {
     };
 
     #[test]
-    fn patient_application_error_cpf_already_taken_display() {
-        let cpf = "00011122233";
-        let err = PatientApplicationError::CPFAlreadyTaken(cpf.to_string());
+    fn patient_application_error_conflict_display() {
+        let err_msg = "cpf already taken";
+        let err = PatientApplicationError::Conflict(err_msg.to_string());
         let err = err.to_string();
 
         assert_eq!(
             err,
-            format!("There's already a user registered with the CPF: {cpf}")
+            "The following conflict occurred when writing a patient: ".to_owned() + err_msg
         );
     }
 

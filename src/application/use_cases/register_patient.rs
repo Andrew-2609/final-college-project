@@ -15,7 +15,10 @@ impl<T: PatientRepository> RegisterPatientUseCase<T> {
 
     pub async fn execute(&self, patient: CreatePatientDTO) -> Result<i32, PatientApplicationError> {
         if self.patient_repo.exists_by_cpf(&patient.cpf).await? {
-            return Err(PatientApplicationError::CPFAlreadyTaken(patient.cpf));
+            return Err(PatientApplicationError::Conflict(format!(
+                "The CPF {} is already taken",
+                patient.cpf
+            )));
         }
 
         let patient: Patient = patient.into();
