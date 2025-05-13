@@ -5,3 +5,5 @@ edition = "2024"
 
 [dependencies]
 async-trait = "0.1.81"
+diesel = { version = "2.2.1", features = ["postgres", "r2d2"] }
+r2d2 = "0.8.10"
