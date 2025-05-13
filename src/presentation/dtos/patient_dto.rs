@@ -28,6 +28,11 @@ impl From<Patient> for Option<LoadedPatientDTO> {
     }
 }
 
+#[derive(Deserialize)]
+pub struct UpdatePatientDTO {
+    pub name: Option<String>,
+}
+
 #[cfg(test)]
 mod test {
     use crate::{

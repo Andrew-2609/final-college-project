@@ -6,6 +6,7 @@ use crate::domain::errors::repository_error::RepositoryError;
 pub enum PatientApplicationError {
     Conflict(String),
     Unexpected(String),
+    NotFound(String),
 }
 
 impl fmt::Display for PatientApplicationError {
@@ -19,6 +20,9 @@ impl fmt::Display for PatientApplicationError {
             }
             PatientApplicationError::Unexpected(msg) => {
                 write!(f, "An unexpected error occurred: {msg}")
+            }
+            PatientApplicationError::NotFound(cpf) => {
+                write!(f, "A patient with the following CPF was not found: {cpf}")
             }
         }
     }
@@ -71,6 +75,18 @@ mod test {
         assert_eq!(
             err,
             PatientApplicationError::Unexpected(err_msg.to_string())
+        );
+    }
+
+    #[test]
+    fn patient_application_error_not_found_display() {
+        let cpf = "12345678901";
+        let err = PatientApplicationError::NotFound(cpf.to_string());
+        let err = err.to_string();
+
+        assert_eq!(
+            err,
+            "A patient with the following CPF was not found: ".to_owned() + cpf
         );
     }
 }

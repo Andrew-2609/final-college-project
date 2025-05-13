@@ -5,6 +5,7 @@
     "dtos",
     "Insertable",
     "mockall",
+    "Monteiro",
     "serde",
     "SGHSS",
     "withf"

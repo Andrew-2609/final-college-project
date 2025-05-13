@@ -8,6 +8,7 @@ use crate::application::errors::patient_application_error::PatientApplicationErr
 pub enum PatientHttpError {
     Constraint(String),
     Internal(String),
+    NotFound(String),
 }
 
 impl fmt::Display for PatientHttpError {
@@ -18,6 +19,9 @@ impl fmt::Display for PatientHttpError {
             }
             PatientHttpError::Internal(msg) => {
                 write!(f, "An internal error occurred for the patient: {msg}")
+            }
+            PatientHttpError::NotFound(msg) => {
+                write!(f, "The patient could not be found: {msg}")
             }
         }
     }
@@ -30,6 +34,7 @@ impl From<PatientApplicationError> for PatientHttpError {
         match value {
             PatientApplicationError::Conflict(msg) => Self::Constraint(msg),
             PatientApplicationError::Unexpected(msg) => Self::Internal(msg),
+            PatientApplicationError::NotFound(msg) => Self::NotFound(msg),
         }
     }
 }
@@ -43,6 +48,7 @@ impl ResponseError for PatientHttpError {
             PatientHttpError::Internal(_) => {
                 HttpResponse::InternalServerError().json(self.to_string())
             }
+            PatientHttpError::NotFound(_) => HttpResponse::NotFound().json(self.to_string()),
         }
     }
 }
@@ -98,6 +104,15 @@ mod test {
     }
 
     #[test]
+    fn from_patient_application_not_found_error() {
+        let err_msg = "Patient not found";
+        let application_err = PatientApplicationError::NotFound(err_msg.to_string());
+        let err: PatientHttpError = application_err.into();
+
+        assert_eq!(err, PatientHttpError::NotFound(err_msg.to_string()));
+    }
+
+    #[test]
     fn constraint_error_response() -> Result<(), Box<dyn std::error::Error>> {
         let err = PatientHttpError::Constraint("Constraint X violated".to_string());
 
@@ -124,6 +139,22 @@ mod test {
         let result_body = std::str::from_utf8(&result_body)?;
 
         assert_eq!(result_status, StatusCode::INTERNAL_SERVER_ERROR);
+        assert_eq!(result_body.replace("\"", ""), err.to_string());
+
+        Ok(())
+    }
+
+    #[test]
+    fn not_found_error_response() -> Result<(), Box<dyn std::error::Error>> {
+        let err = PatientHttpError::NotFound("Patient not found".to_string());
+
+        let result = err.error_response();
+
+        let result_status = result.status();
+        let result_body = result.into_body().try_into_bytes().unwrap();
+        let result_body = std::str::from_utf8(&result_body)?;
+
+        assert_eq!(result_status, StatusCode::NOT_FOUND);
         assert_eq!(result_body.replace("\"", ""), err.to_string());
 
         Ok(())

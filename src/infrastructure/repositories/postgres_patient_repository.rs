@@ -1,12 +1,12 @@
 use crate::{
     domain::{
         entities::patient::Patient, errors::repository_error::RepositoryError,
-        repositories::patient_repository::PatientRepository,
+        repositories::patient_repository::PatientRepository, value_objects::id::ID,
     },
     infrastructure::db::connection::{DBPool, establish_connection},
     schema::{
         self,
-        patients::dsl::{cpf, id, patients},
+        patients::dsl::{cpf, id, name, patients},
     },
 };
 use async_trait::async_trait;
@@ -57,5 +57,17 @@ impl PatientRepository for Arc<PostgresPatientRepository> {
             .optional()?;
 
         Ok(patient)
+    }
+
+    async fn update(&self, patient: &Patient) -> Result<Patient, RepositoryError> {
+        if let ID::Existing(input_id) = patient.id {
+            let updated_patient = diesel::update(patients.filter(id.eq(input_id)))
+                .set(name.eq(patient.name.clone()))
+                .get_result(&mut self.pool.get().unwrap())?;
+
+            return Ok(updated_patient);
+        }
+
+        Ok(patient.clone())
     }
 }
