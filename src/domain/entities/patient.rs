@@ -1,10 +1,15 @@
+use diesel::prelude::Insertable;
+
 use crate::{
     domain::{errors::patient_entity_error::PatientEntityError, value_objects::id::ID},
     presentation::dtos::patient_dto::CreatePatientDTO,
+    schema::patients,
 };
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, Insertable, PartialEq)]
+#[diesel(table_name = patients)]
 pub struct Patient {
+    #[diesel(serialize_as = Option<i32>, deserialize_as = i32)]
     pub id: ID,
     pub name: String,
     pub cpf: String,
