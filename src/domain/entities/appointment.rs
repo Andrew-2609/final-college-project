@@ -1,6 +1,5 @@
 use crate::{
     domain::{errors::appointment_entity_error::AppointmentEntityError, value_objects::id::ID},
-    presentation::dtos::appointment_dto::CreateAppointmentDTO,
     schema::appointments,
 };
 use chrono::NaiveDateTime;
@@ -35,18 +34,5 @@ impl Appointment {
             specialty,
             notes,
         })
-    }
-}
-
-impl TryFrom<CreateAppointmentDTO> for Appointment {
-    type Error = AppointmentEntityError;
-
-    fn try_from(value: CreateAppointmentDTO) -> Result<Self, Self::Error> {
-        Self::new(
-            value.patient_id,
-            value.appointment_at.parse::<NaiveDateTime>()?,
-            value.specialty,
-            value.notes,
-        )
     }
 }

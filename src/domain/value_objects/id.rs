@@ -7,6 +7,12 @@ pub enum ID {
     Existing(i32),
 }
 
+impl ID {
+    pub fn is_existing(&self) -> bool {
+        matches!(self, ID::Existing(_))
+    }
+}
+
 impl From<i32> for ID {
     fn from(value: i32) -> Self {
         Self::Existing(value)

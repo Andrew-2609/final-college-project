@@ -9,7 +9,7 @@ pub enum AppointmentHttpError {
     Constraint(String),
     Internal(String),
     NotFound(i32),
-    PatientNotFound(i32),
+    PatientNotFound(String),
 }
 
 impl fmt::Display for AppointmentHttpError {
@@ -24,8 +24,8 @@ impl fmt::Display for AppointmentHttpError {
             AppointmentHttpError::NotFound(appointment_id) => {
                 write!(f, "The appointment could not be found: {appointment_id}")
             }
-            AppointmentHttpError::PatientNotFound(patient_id) => {
-                write!(f, "The patient could not be found: {patient_id}")
+            AppointmentHttpError::PatientNotFound(patient_cpf) => {
+                write!(f, "The patient could not be found: {patient_cpf}")
             }
         }
     }
@@ -36,8 +36,8 @@ impl std::error::Error for AppointmentHttpError {}
 impl From<AppointmentApplicationError> for AppointmentHttpError {
     fn from(value: AppointmentApplicationError) -> Self {
         match value {
-            AppointmentApplicationError::PatientNotFound(patient_id) => {
-                AppointmentHttpError::PatientNotFound(patient_id)
+            AppointmentApplicationError::PatientNotFound(patient_cpf) => {
+                AppointmentHttpError::PatientNotFound(patient_cpf)
             }
             AppointmentApplicationError::Constraint(msg) => AppointmentHttpError::Constraint(msg),
             AppointmentApplicationError::Unexpected(msg) => AppointmentHttpError::Internal(msg),

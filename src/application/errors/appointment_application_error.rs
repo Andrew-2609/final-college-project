@@ -8,7 +8,7 @@ use crate::domain::errors::{
 pub enum AppointmentApplicationError {
     Constraint(String),
     Unexpected(String),
-    PatientNotFound(i32),
+    PatientNotFound(String),
 }
 
 impl fmt::Display for AppointmentApplicationError {
@@ -20,8 +20,8 @@ impl fmt::Display for AppointmentApplicationError {
             AppointmentApplicationError::Unexpected(msg) => {
                 write!(f, "An unexpected error occurred: {msg}")
             }
-            AppointmentApplicationError::PatientNotFound(id) => {
-                write!(f, "A patient with the following ID was not found: {id}")
+            AppointmentApplicationError::PatientNotFound(cpf) => {
+                write!(f, "A patient with the following CPF was not found: {cpf}")
             }
         }
     }
@@ -42,5 +42,11 @@ impl From<AppointmentEntityError> for AppointmentApplicationError {
         match value {
             err => AppointmentApplicationError::Constraint(err.to_string()),
         }
+    }
+}
+
+impl From<chrono::ParseError> for AppointmentApplicationError {
+    fn from(value: chrono::ParseError) -> Self {
+        AppointmentApplicationError::Unexpected(value.to_string())
     }
 }

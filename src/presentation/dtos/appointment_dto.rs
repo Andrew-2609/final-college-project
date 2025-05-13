@@ -3,8 +3,8 @@ use serde::{Deserialize, Serialize};
 use crate::domain::{entities::appointment::Appointment, value_objects::id::ID};
 
 #[derive(Deserialize)]
-pub struct CreateAppointmentDTO {
-    pub patient_id: i32,
+pub struct BookAppointmentDTO {
+    pub patient_cpf: String,
     pub appointment_at: String,
     pub specialty: String,
     pub notes: Option<String>,
