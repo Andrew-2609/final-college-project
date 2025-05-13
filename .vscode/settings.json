@@ -4,6 +4,7 @@
     "dotenv",
     "dtos",
     "Insertable",
-    "serde"
+    "serde",
+    "SGHSS"
   ]
 }
