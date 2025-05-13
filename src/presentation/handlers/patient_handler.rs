@@ -9,7 +9,7 @@ use crate::{
         find_patient_by_cpf::FindPatientByCpfUseCase, register_patient::RegisterPatientUseCase,
         update_patient_by_cpf::UpdatePatientByCpfUseCase,
     },
-    infrastructure::repositories::postgres_patient_repository::PostgresPatientRepository,
+    infrastructure::web::AppState,
     presentation::{
         dtos::patient_dto::{CreatePatientDTO, LoadedPatientDTO, UpdatePatientDTO},
         errors::patient_http_error::PatientHttpError,
@@ -18,10 +18,10 @@ use crate::{
 
 #[post("")]
 pub async fn register_patient_handler(
-    repo: web::Data<PostgresPatientRepository>,
+    app_state: web::Data<AppState>,
     input: web::Json<CreatePatientDTO>,
 ) -> HttpResponse {
-    match RegisterPatientUseCase::new(repo.into_inner())
+    match RegisterPatientUseCase::new(app_state.patient_repo.clone())
         .execute(input.into_inner())
         .await
     {
@@ -32,12 +32,12 @@ pub async fn register_patient_handler(
 
 #[get("/{cpf}")]
 pub async fn find_patient_by_cpf_handler(
-    repo: web::Data<PostgresPatientRepository>,
+    app_state: web::Data<AppState>,
     path: Path<String>,
 ) -> HttpResponse {
     let cpf = path.into_inner();
 
-    let result = FindPatientByCpfUseCase::new(repo.into_inner())
+    let result = FindPatientByCpfUseCase::new(app_state.patient_repo.clone())
         .execute(cpf.clone())
         .await;
 
@@ -56,11 +56,11 @@ pub async fn find_patient_by_cpf_handler(
 
 #[put("/{cpf}")]
 pub async fn update_patient_by_cpf_handler(
-    repo: web::Data<PostgresPatientRepository>,
+    app_state: web::Data<AppState>,
     path: Path<String>,
     input: web::Json<UpdatePatientDTO>,
 ) -> HttpResponse {
-    match UpdatePatientByCpfUseCase::new(repo.into_inner())
+    match UpdatePatientByCpfUseCase::new(app_state.patient_repo.clone())
         .execute(path.into_inner(), input.into_inner())
         .await
     {
@@ -74,10 +74,10 @@ pub async fn update_patient_by_cpf_handler(
 
 #[delete("/{cpf}")]
 pub async fn delete_patient_by_cpf_handler(
-    repo: web::Data<PostgresPatientRepository>,
+    app_state: web::Data<AppState>,
     path: Path<String>,
 ) -> HttpResponse {
-    match DeletePatientByCpfUseCase::new(repo.into_inner())
+    match DeletePatientByCpfUseCase::new(app_state.patient_repo.clone())
         .execute(path.into_inner())
         .await
     {

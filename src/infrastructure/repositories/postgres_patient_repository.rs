@@ -13,6 +13,7 @@ use async_trait::async_trait;
 use diesel::{dsl::exists, prelude::*, select};
 use std::sync::Arc;
 
+#[derive(Clone)]
 pub struct PostgresPatientRepository {
     pool: DBPool,
 }
@@ -23,12 +24,6 @@ impl PostgresPatientRepository {
         Self {
             pool: establish_connection(&database_url),
         }
-    }
-}
-
-impl From<diesel::result::Error> for RepositoryError {
-    fn from(value: diesel::result::Error) -> Self {
-        RepositoryError::DatabaseError(value.to_string())
     }
 }
 
@@ -48,6 +43,15 @@ impl PatientRepository for Arc<PostgresPatientRepository> {
             .get_result(&mut self.pool.get().unwrap())?;
 
         Ok(inserted_patient_id)
+    }
+
+    async fn find_by_id(&self, input_id: i32) -> Result<Option<Patient>, RepositoryError> {
+        let patient = patients
+            .filter(id.eq(input_id))
+            .first::<Patient>(&mut self.pool.get().unwrap())
+            .optional()?;
+
+        Ok(patient)
     }
 
     async fn find_by_cpf(&self, input_cpf: String) -> Result<Option<Patient>, RepositoryError> {

@@ -5,7 +5,7 @@ use crate::presentation::handlers::patient_handler::{
     update_patient_by_cpf_handler,
 };
 
-pub fn routes(config: &mut web::ServiceConfig) {
+pub fn patient_routes(config: &mut web::ServiceConfig) {
     config.service(
         web::scope("/api/v1/patients")
             .service(register_patient_handler)
