@@ -8,7 +8,7 @@ use crate::application::errors::appointment_application_error::AppointmentApplic
 pub enum AppointmentHttpError {
     Constraint(String),
     Internal(String),
-    NotFound(i32),
+    NotFound(String),
     PatientNotFound(String),
 }
 
@@ -21,8 +21,8 @@ impl fmt::Display for AppointmentHttpError {
             AppointmentHttpError::Internal(msg) => {
                 write!(f, "An internal error occurred for the appointment: {msg}")
             }
-            AppointmentHttpError::NotFound(appointment_id) => {
-                write!(f, "The appointment could not be found: {appointment_id}")
+            AppointmentHttpError::NotFound(msg) => {
+                write!(f, "The appointment could not be found: {msg}")
             }
             AppointmentHttpError::PatientNotFound(patient_cpf) => {
                 write!(f, "The patient could not be found: {patient_cpf}")
@@ -41,6 +41,7 @@ impl From<AppointmentApplicationError> for AppointmentHttpError {
             }
             AppointmentApplicationError::Constraint(msg) => AppointmentHttpError::Constraint(msg),
             AppointmentApplicationError::Unexpected(msg) => AppointmentHttpError::Internal(msg),
+            AppointmentApplicationError::NotFound(msg) => AppointmentHttpError::NotFound(msg),
         }
     }
 }

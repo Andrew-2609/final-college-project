@@ -3,9 +3,9 @@ use crate::{
     schema::appointments,
 };
 use chrono::NaiveDateTime;
-use diesel::prelude::{Insertable, Queryable};
+use diesel::prelude::{AsChangeset, Insertable, Queryable};
 
-#[derive(Clone, Insertable, Queryable)]
+#[derive(AsChangeset, Clone, Insertable, Queryable)]
 #[diesel(table_name = appointments)]
 pub struct Appointment {
     #[diesel(serialize_as = Option<i32>, deserialize_as = i32)]
@@ -14,6 +14,9 @@ pub struct Appointment {
     pub appointment_at: NaiveDateTime,
     pub specialty: String,
     pub notes: Option<String>,
+    pub canceled: bool,
+    pub canceled_at: Option<NaiveDateTime>,
+    pub cancellation_reason: Option<String>,
 }
 
 impl Appointment {
@@ -33,6 +36,19 @@ impl Appointment {
             appointment_at,
             specialty,
             notes,
+            canceled: false,
+            canceled_at: None,
+            cancellation_reason: None,
         })
+    }
+
+    pub fn cancel(&mut self, cancellation_reason: String) {
+        self.canceled = true;
+        self.canceled_at = Some(chrono::Local::now().naive_utc());
+        self.cancellation_reason = Some(cancellation_reason);
+    }
+
+    pub fn is_canceled(&self) -> bool {
+        self.canceled
     }
 }

@@ -13,4 +13,10 @@ pub trait AppointmentRepository {
         appointment_at: NaiveDateTime,
     ) -> Result<bool, RepositoryError>;
     async fn save(&self, appointment: &Appointment) -> Result<Appointment, RepositoryError>;
+    async fn find_by_patient_id_and_appointment_at(
+        &self,
+        patient_id: i32,
+        appointment_at: NaiveDateTime,
+    ) -> Result<Option<Appointment>, RepositoryError>;
+    async fn update(&self, appointment: &Appointment) -> Result<Appointment, RepositoryError>;
 }

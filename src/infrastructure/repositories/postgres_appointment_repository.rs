@@ -1,5 +1,5 @@
 use crate::schema;
-use crate::schema::appointments::dsl::{appointment_at, appointments, patient_id};
+use crate::schema::appointments::dsl::{appointment_at, appointments, canceled, id, patient_id};
 use crate::{
     domain::{
         entities::appointment::Appointment, errors::repository_error::RepositoryError,
@@ -36,7 +36,8 @@ impl AppointmentRepository for Arc<PostgresAppointmentRepository> {
         let exists_by_patient_id_and_appointment_at = select(exists(
             appointments
                 .filter(patient_id.eq(input_patient_id))
-                .filter(appointment_at.eq(input_appointment_at)),
+                .filter(appointment_at.eq(input_appointment_at))
+                .filter(canceled.eq(false)),
         ))
         .get_result(&mut self.pool.get().unwrap())?;
 
@@ -49,5 +50,32 @@ impl AppointmentRepository for Arc<PostgresAppointmentRepository> {
             .get_result::<Appointment>(&mut self.pool.get().unwrap())?;
 
         Ok(inserted_appointment)
+    }
+
+    async fn find_by_patient_id_and_appointment_at(
+        &self,
+        input_patient_id: i32,
+        input_appointment_at: NaiveDateTime,
+    ) -> Result<Option<Appointment>, RepositoryError> {
+        let appointment = appointments
+            .filter(patient_id.eq(input_patient_id))
+            .filter(appointment_at.eq(input_appointment_at))
+            .filter(canceled.eq(false))
+            .first::<Appointment>(&mut self.pool.get().unwrap())
+            .optional()?;
+
+        Ok(appointment)
+    }
+
+    async fn update(&self, appointment: &Appointment) -> Result<Appointment, RepositoryError> {
+        let appointment_id: Option<i32> = appointment.id.clone().into();
+        let appointment_id = appointment_id.unwrap_or(0);
+
+        let updated_appointment = diesel::update(schema::appointments::table)
+            .filter(id.eq(appointment_id))
+            .set(appointment.clone())
+            .get_result::<Appointment>(&mut self.pool.get().unwrap())?;
+
+        Ok(updated_appointment)
     }
 }

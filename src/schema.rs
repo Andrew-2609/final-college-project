@@ -20,6 +20,9 @@ diesel::table! {
         #[max_length = 100]
         specialty -> Varchar,
         notes -> Nullable<Text>,
+        canceled -> Bool,
+        canceled_at -> Nullable<Timestamp>,
+        cancellation_reason -> Nullable<Text>,
     }
 }
 

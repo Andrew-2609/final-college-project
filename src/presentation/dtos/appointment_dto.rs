@@ -17,6 +17,9 @@ pub struct LoadedAppointmentDTO {
     pub appointment_at: String,
     pub specialty: String,
     pub notes: Option<String>,
+    pub canceled: bool,
+    pub canceled_at: Option<String>,
+    pub cancellation_reason: Option<String>,
 }
 
 impl From<Appointment> for Option<LoadedAppointmentDTO> {
@@ -28,8 +31,18 @@ impl From<Appointment> for Option<LoadedAppointmentDTO> {
                 appointment_at: value.appointment_at.to_string(),
                 specialty: value.specialty,
                 notes: value.notes,
+                canceled: value.canceled,
+                canceled_at: value.canceled_at.map(|dt| dt.to_string()),
+                cancellation_reason: value.cancellation_reason,
             }),
             ID::New => None,
         }
     }
+}
+
+#[derive(Deserialize)]
+pub struct CancelAppointmentDTO {
+    pub patient_cpf: String,
+    pub appointment_at: String,
+    pub cancellation_reason: Option<String>,
 }

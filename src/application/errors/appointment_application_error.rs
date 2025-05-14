@@ -9,6 +9,7 @@ pub enum AppointmentApplicationError {
     Constraint(String),
     Unexpected(String),
     PatientNotFound(String),
+    NotFound(String),
 }
 
 impl fmt::Display for AppointmentApplicationError {
@@ -22,6 +23,9 @@ impl fmt::Display for AppointmentApplicationError {
             }
             AppointmentApplicationError::PatientNotFound(cpf) => {
                 write!(f, "A patient with the following CPF was not found: {cpf}")
+            }
+            AppointmentApplicationError::NotFound(msg) => {
+                write!(f, "{msg}")
             }
         }
     }
