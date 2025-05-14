@@ -5,6 +5,7 @@
     "dotenv",
     "dtos",
     "Insertable",
+    "jsonwebtoken",
     "mockall",
     "Monteiro",
     "serde",
