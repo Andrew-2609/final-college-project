@@ -19,11 +19,13 @@ use crate::{
         errors::{
             appointment_http_error::AppointmentHttpError, patient_http_error::PatientHttpError,
         },
+        extractors::jwt_extractor::AuthenticatedAdmin,
     },
 };
 
 #[post("")]
 pub async fn register_patient_handler(
+    _: AuthenticatedAdmin,
     app_state: web::Data<AppState>,
     input: web::Json<CreatePatientDTO>,
 ) -> HttpResponse {
@@ -38,6 +40,7 @@ pub async fn register_patient_handler(
 
 #[get("/{cpf}")]
 pub async fn find_patient_by_cpf_handler(
+    _: AuthenticatedAdmin,
     app_state: web::Data<AppState>,
     path: Path<String>,
 ) -> HttpResponse {
@@ -62,6 +65,7 @@ pub async fn find_patient_by_cpf_handler(
 
 #[put("/{cpf}")]
 pub async fn update_patient_by_cpf_handler(
+    _: AuthenticatedAdmin,
     app_state: web::Data<AppState>,
     path: Path<String>,
     input: web::Json<UpdatePatientDTO>,
@@ -80,6 +84,7 @@ pub async fn update_patient_by_cpf_handler(
 
 #[delete("/{cpf}")]
 pub async fn delete_patient_by_cpf_handler(
+    _: AuthenticatedAdmin,
     app_state: web::Data<AppState>,
     path: Path<String>,
 ) -> HttpResponse {
@@ -94,6 +99,7 @@ pub async fn delete_patient_by_cpf_handler(
 
 #[get("/{cpf}/appointments")]
 pub async fn list_appointments_by_patient_cpf_handler(
+    _: AuthenticatedAdmin,
     app_state: web::Data<AppState>,
     path: Path<String>,
 ) -> HttpResponse {

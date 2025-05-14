@@ -1,5 +1,3 @@
-use actix_web::{HttpResponse, ResponseError, patch, post, web};
-
 use crate::{
     application::use_cases::{
         book_appointment::BookAppointmentUseCase, cancel_appointment::CancelAppointmentUseCase,
@@ -8,11 +6,14 @@ use crate::{
     presentation::{
         dtos::appointment_dto::{BookAppointmentDTO, CancelAppointmentDTO, LoadedAppointmentDTO},
         errors::appointment_http_error::AppointmentHttpError,
+        extractors::jwt_extractor::AuthenticatedAdmin,
     },
 };
+use actix_web::{HttpResponse, ResponseError, patch, post, web};
 
 #[post("")]
 pub async fn book_appointment_handler(
+    _: AuthenticatedAdmin,
     app_state: web::Data<AppState>,
     input: web::Json<BookAppointmentDTO>,
 ) -> HttpResponse {
@@ -33,6 +34,7 @@ pub async fn book_appointment_handler(
 
 #[patch("/cancellation")]
 pub async fn cancel_appointment_handler(
+    _: AuthenticatedAdmin,
     app_state: web::Data<AppState>,
     input: web::Json<CancelAppointmentDTO>,
 ) -> HttpResponse {
