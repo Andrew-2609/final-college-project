@@ -78,4 +78,15 @@ impl AppointmentRepository for Arc<PostgresAppointmentRepository> {
 
         Ok(updated_appointment)
     }
+
+    async fn find_by_patient_id(
+        &self,
+        input_patient_id: i32,
+    ) -> Result<Vec<Appointment>, RepositoryError> {
+        let found_appointments = appointments
+            .filter(patient_id.eq(input_patient_id))
+            .load::<Appointment>(&mut self.pool.get().unwrap())?;
+
+        Ok(found_appointments)
+    }
 }

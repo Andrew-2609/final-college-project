@@ -1,7 +1,8 @@
 use actix_web::web;
 
 use crate::presentation::handlers::patient_handler::{
-    delete_patient_by_cpf_handler, find_patient_by_cpf_handler, register_patient_handler,
+    delete_patient_by_cpf_handler, find_patient_by_cpf_handler,
+    list_appointments_by_patient_cpf_handler, register_patient_handler,
     update_patient_by_cpf_handler,
 };
 
@@ -11,6 +12,7 @@ pub fn patient_routes(config: &mut web::ServiceConfig) {
             .service(register_patient_handler)
             .service(find_patient_by_cpf_handler)
             .service(update_patient_by_cpf_handler)
-            .service(delete_patient_by_cpf_handler),
+            .service(delete_patient_by_cpf_handler)
+            .service(list_appointments_by_patient_cpf_handler),
     );
 }

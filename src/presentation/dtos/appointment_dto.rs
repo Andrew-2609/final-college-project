@@ -40,6 +40,33 @@ impl From<Appointment> for Option<LoadedAppointmentDTO> {
     }
 }
 
+#[derive(Serialize)]
+pub struct LoadedAppointmentsDTO(Vec<LoadedAppointmentDTO>);
+
+impl LoadedAppointmentsDTO {
+    pub fn push(&mut self, appointment_dto: LoadedAppointmentDTO) {
+        self.0.push(appointment_dto);
+    }
+
+    pub fn collect(self) -> Vec<LoadedAppointmentDTO> {
+        self.0
+    }
+}
+
+impl From<Vec<Appointment>> for LoadedAppointmentsDTO {
+    fn from(value: Vec<Appointment>) -> Self {
+        let mut result: LoadedAppointmentsDTO = LoadedAppointmentsDTO(Vec::new());
+
+        for appointment in value {
+            if let Some(appointment_dto) = Option::<LoadedAppointmentDTO>::from(appointment) {
+                result.push(appointment_dto);
+            }
+        }
+
+        result
+    }
+}
+
 #[derive(Deserialize)]
 pub struct CancelAppointmentDTO {
     pub patient_cpf: String,

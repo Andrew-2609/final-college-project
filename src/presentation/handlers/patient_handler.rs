@@ -6,13 +6,19 @@ use actix_web::{
 use crate::{
     application::use_cases::{
         delete_patient_by_cpf::DeletePatientByCpfUseCase,
-        find_patient_by_cpf::FindPatientByCpfUseCase, register_patient::RegisterPatientUseCase,
-        update_patient_by_cpf::UpdatePatientByCpfUseCase,
+        find_patient_by_cpf::FindPatientByCpfUseCase,
+        list_appointments_by_patient_cpf::ListAppointmentsByPatientCpfUseCase,
+        register_patient::RegisterPatientUseCase, update_patient_by_cpf::UpdatePatientByCpfUseCase,
     },
     infrastructure::web::AppState,
     presentation::{
-        dtos::patient_dto::{CreatePatientDTO, LoadedPatientDTO, UpdatePatientDTO},
-        errors::patient_http_error::PatientHttpError,
+        dtos::{
+            appointment_dto::LoadedAppointmentsDTO,
+            patient_dto::{CreatePatientDTO, LoadedPatientDTO, UpdatePatientDTO},
+        },
+        errors::{
+            appointment_http_error::AppointmentHttpError, patient_http_error::PatientHttpError,
+        },
     },
 };
 
@@ -83,5 +89,25 @@ pub async fn delete_patient_by_cpf_handler(
     {
         Ok(_) => HttpResponse::Ok().json(()),
         Err(err) => PatientHttpError::from(err).error_response(),
+    }
+}
+
+#[get("/{cpf}/appointments")]
+pub async fn list_appointments_by_patient_cpf_handler(
+    app_state: web::Data<AppState>,
+    path: Path<String>,
+) -> HttpResponse {
+    match ListAppointmentsByPatientCpfUseCase::new(
+        app_state.patient_repo.clone(),
+        app_state.appointment_repo.clone(),
+    )
+    .execute(path.into_inner())
+    .await
+    {
+        Ok(appointments) => {
+            let loaded_appointments: LoadedAppointmentsDTO = appointments.into();
+            HttpResponse::Ok().json(loaded_appointments)
+        }
+        Err(err) => AppointmentHttpError::from(err).error_response(),
     }
 }

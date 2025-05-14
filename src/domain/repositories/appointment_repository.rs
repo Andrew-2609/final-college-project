@@ -19,4 +19,8 @@ pub trait AppointmentRepository {
         appointment_at: NaiveDateTime,
     ) -> Result<Option<Appointment>, RepositoryError>;
     async fn update(&self, appointment: &Appointment) -> Result<Appointment, RepositoryError>;
+    async fn find_by_patient_id(
+        &self,
+        patient_id: i32,
+    ) -> Result<Vec<Appointment>, RepositoryError>;
 }
